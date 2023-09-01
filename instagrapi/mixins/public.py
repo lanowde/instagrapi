@@ -70,18 +70,24 @@ class PublicRequestMixin:
         for iteration in range(retries_count):
             try:
                 return self._send_public_request(url, **kwargs)
-            except (ClientLoginRequired, ClientNotFoundError, ClientBadRequestError) as e:
+            except (
+                ClientLoginRequired,
+                ClientNotFoundError,
+                ClientBadRequestError,
+            ) as e:
                 raise e  # Stop retries
             # except JSONDecodeError as e:
             #     raise ClientJSONDecodeError(e, respones=self.last_public_response)
             except ClientError as e:
                 msg = str(e)
-                if all((
-                    isinstance(e, ClientConnectionError),
-                    "SOCKSHTTPSConnectionPool" in msg,
-                    "Max retries exceeded with url" in msg,
-                    "Failed to establish a new connection" in msg
-                )):
+                if all(
+                    (
+                        isinstance(e, ClientConnectionError),
+                        "SOCKSHTTPSConnectionPool" in msg,
+                        "Max retries exceeded with url" in msg,
+                        "Failed to establish a new connection" in msg,
+                    )
+                ):
                     raise e
                 if retries_count > iteration + 1:
                     time.sleep(retries_timeout)

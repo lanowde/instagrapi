@@ -11,8 +11,8 @@ class ClientError(Exception):
             setattr(self, key, kwargs.pop(key))
         if not self.message:
             self.message = "{title} ({body})".format(
-                title=getattr(self, 'reason', 'Unknown'),
-                body=getattr(self, 'error_type', vars(self))
+                title=getattr(self, "reason", "Unknown"),
+                body=getattr(self, "error_type", vars(self)),
             )
         super().__init__(self.message, *args, **kwargs)
         if self.response:
@@ -72,7 +72,7 @@ class PrivateError(ClientError):
 
 
 class NotFoundError(PrivateError):
-    reason = 'Not found'
+    reason = "Not found"
 
 
 class FeedbackRequired(PrivateError):
@@ -82,8 +82,10 @@ class FeedbackRequired(PrivateError):
 class ChallengeError(PrivateError):
     pass
 
+
 class ManualInputRequired(PrivateError):
     pass
+
 
 class ChallengeRedirection(ChallengeError):
     pass

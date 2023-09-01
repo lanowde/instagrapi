@@ -80,7 +80,9 @@ class AccountMixin:
             "can_add_additional_totp_seed": false
             }
         """
-        return self.private_request("accounts/account_security_info/", self.with_default_data({}))
+        return self.private_request(
+            "accounts/account_security_info/", self.with_default_data({})
+        )
 
     def account_edit(self, **data: Dict) -> Account:
         """
@@ -113,7 +115,9 @@ class AccountMixin:
         # Instagram original field-name for full user name is "first_name"
         data["first_name"] = data.pop("full_name")
         # Biography with entities (markup)
-        result = self.private_request("accounts/edit_profile/", self.with_default_data(data))
+        result = self.private_request(
+            "accounts/edit_profile/", self.with_default_data(data)
+        )
         biography = data.get("biography")
         if biography:
             self.account_set_biography(biography)
@@ -133,11 +137,10 @@ class AccountMixin:
         bool
             A boolean value
         """
-        data = {
-            "logged_in_uids": dumps([str(self.user_id)]),
-            "raw_text": biography
-        }
-        result = self.private_request("accounts/set_biography/", self.with_default_data(data))
+        data = {"logged_in_uids": dumps([str(self.user_id)]), "raw_text": biography}
+        result = self.private_request(
+            "accounts/set_biography/", self.with_default_data(data)
+        )
         return result["status"] == "ok"
 
     def account_change_picture(self, path: Path) -> UserShort:
@@ -175,6 +178,5 @@ class AccountMixin:
         dict
         """
         return self.private_request(
-            "news/inbox/",
-            params={'mark_as_seen': mark_as_seen}
+            "news/inbox/", params={"mark_as_seen": mark_as_seen}
         )

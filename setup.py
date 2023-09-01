@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-long_description = '''
+long_description = """
 Fast and effective Instagram Private API wrapper (public+private requests and challenge resolver).
 
 Use the most recent version of the API from Instagram.
@@ -15,47 +15,63 @@ Features:
 6. Insights by account, posts and stories
 7. Build stories with custom background, font animation, swipe up link and mention users
 8. In the next release, account registration and captcha passing will appear
-'''
+"""
 
-requirements = [
-    'requests',
-    'PySocks',
-    'pydantic',
-    'pycryptodomex'
-]
+requirements = ["requests", "PySocks", "pydantic", "pycryptodomex"]
 # requirements = [
 #     line.strip()
 #     for line in open('requirements.txt').readlines()
 # ]
 
 setup(
-    name='instagrapi',
-    version='1.15.19',
-    author='Mikhail Andreev',
-    author_email='x11org@gmail.com',
-    license='MIT',
-    url='https://github.com/adw0rd/instagrapi',
+    name="instagrapi",
+    version="1.15.19",
+    author="Mikhail Andreev",
+    author_email="x11org@gmail.com",
+    license="MIT",
+    url="https://github.com/adw0rd/instagrapi",
     install_requires=requirements,
     keywords=[
-        'instagram private api', 'instagram-private-api', 'instagram api', 'instagram-api', 'instagram',
-        'instagram-scraper', 'instagram-client', 'instagram-stories', 'instagram-feed', 'instagram-reels', 'instagram-insights',
-        'downloader', 'uploader', 'videos', 'photos', 'albums', 'igtv', 'reels', 'stories', 'pictures',
-        'instagram-user-photos', 'instagram-photos', 'instagram-metadata', 'instagram-downloader', 'instagram-uploader'
+        "instagram private api",
+        "instagram-private-api",
+        "instagram api",
+        "instagram-api",
+        "instagram",
+        "instagram-scraper",
+        "instagram-client",
+        "instagram-stories",
+        "instagram-feed",
+        "instagram-reels",
+        "instagram-insights",
+        "downloader",
+        "uploader",
+        "videos",
+        "photos",
+        "albums",
+        "igtv",
+        "reels",
+        "stories",
+        "pictures",
+        "instagram-user-photos",
+        "instagram-photos",
+        "instagram-metadata",
+        "instagram-downloader",
+        "instagram-uploader",
     ],
-    description='Fast and effective Instagram Private API wrapper',
+    description="Fast and effective Instagram Private API wrapper",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     packages=find_packages(),
     python_requires=">=3.6",
     include_package_data=True,
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-    ]
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
 )

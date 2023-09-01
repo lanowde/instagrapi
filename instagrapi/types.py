@@ -5,9 +5,9 @@ from pydantic import BaseModel, FilePath, HttpUrl, ValidationError, validator
 
 
 def validate_external_url(cls, v):
-    if v is None or (v.startswith('http') and '://' in v) or isinstance(v, str):
+    if v is None or (v.startswith("http") and "://" in v) or isinstance(v, str):
         return v
-    raise ValidationError('external_url must been URL or string')
+    raise ValidationError("external_url must been URL or string")
 
 
 class Resource(BaseModel):
@@ -38,7 +38,7 @@ class User(BaseModel):
     business_category_name: Optional[str]
     category_name: Optional[str]
 
-    _external_url = validator('external_url', allow_reuse=True)(validate_external_url)
+    _external_url = validator("external_url", allow_reuse=True)(validate_external_url)
 
 
 class Account(BaseModel):
@@ -56,7 +56,7 @@ class Account(BaseModel):
     gender: Optional[int]
     email: Optional[str]
 
-    _external_url = validator('external_url', allow_reuse=True)(validate_external_url)
+    _external_url = validator("external_url", allow_reuse=True)(validate_external_url)
 
 
 class UserShort(BaseModel):
@@ -206,7 +206,7 @@ class StoryLocation(BaseModel):
 
 class StorySticker(BaseModel):
     id: str
-    type: Optional[str] = 'gif'
+    type: Optional[str] = "gif"
     x: float
     y: float
     z: Optional[int] = 1000005

@@ -8,7 +8,6 @@ from instagrapi.types import Highlight
 
 
 class HighlightMixin:
-
     def highlight_pk_from_url(self, url: str) -> int:
         """
         Get Highlight PK from URL
@@ -27,7 +26,7 @@ class HighlightMixin:
         --------
         https://www.instagram.com/stories/highlights/17895485201104054/ -> 17895485201104054
         """
-        assert '/highlights/' in url, 'URL must contain the "/highlights/"'
+        assert "/highlights/" in url, 'URL must contain the "/highlights/"'
         path = urlparse(url).path
         parts = [p for p in path.split("/") if p and p.isdigit()]
         return int(parts[0])
@@ -53,10 +52,10 @@ class HighlightMixin:
             "source": "profile",
             "_uid": str(self.user_id),
             "_uuid": self.uuid,
-            "user_ids": [highlight_id]
+            "user_ids": [highlight_id],
         }
-        result = self.private_request('feed/reels_media/', data)
-        data = result['reels']
+        result = self.private_request("feed/reels_media/", data)
+        data = result["reels"]
         if highlight_id not in data:
             raise HighlightNotFound(highlight_pk=highlight_pk, **data)
         return extract_highlight_v1(data[highlight_id])

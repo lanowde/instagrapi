@@ -337,8 +337,8 @@ class UserMixin:
             params={
                 "search_surface": "follow_list_page",
                 "query": query,
-                "enable_groups": "true"
-            }
+                "enable_groups": "true",
+            },
         )
         users = results.get("users", [])
         return [extract_user_short(user) for user in users]
@@ -383,8 +383,8 @@ class UserMixin:
                 "includes_hashtags": "false",
                 "search_surface": "follow_list_page",
                 "query": query,
-                "enable_groups": "true"
-            }
+                "enable_groups": "true",
+            },
         )
         users = results.get("users", [])
         return [extract_user_short(user) for user in users]
@@ -486,7 +486,9 @@ class UserMixin:
             }
             if max_id:
                 params["max_id"] = max_id
-            result = self.private_request(f"friendships/{user_id}/following/", params=params)
+            result = self.private_request(
+                f"friendships/{user_id}/following/", params=params
+            )
             for user in result["users"]:
                 users.append(extract_user_short(user))
             max_id = result.get("next_max_id")
@@ -534,7 +536,9 @@ class UserMixin:
             following = dict(list(following.items())[:amount])
         return following
 
-    def user_followers_gql_chunk(self, user_id: int, max_amount: int = 0, end_cursor: str = None) -> Tuple[List[UserShort], str]:
+    def user_followers_gql_chunk(
+        self, user_id: int, max_amount: int = 0, end_cursor: str = None
+    ) -> Tuple[List[UserShort], str]:
         """
         Get user's followers information by Public Graphql API and end_cursor
 
@@ -558,7 +562,7 @@ class UserMixin:
             "id": user_id,
             "include_reel": True,
             "fetch_mutual": False,
-            "first": 12
+            "first": 12,
         }
         self.inject_sessionid_to_public()
         while True:
@@ -569,7 +573,9 @@ class UserMixin:
             )
             if not data["user"] and not users:
                 raise UserNotFound(user_id=user_id, **data)
-            page_info = json_value(data, "user", "edge_followed_by", "page_info", default={})
+            page_info = json_value(
+                data, "user", "edge_followed_by", "page_info", default={}
+            )
             edges = json_value(data, "user", "edge_followed_by", "edges", default=[])
             for edge in edges:
                 users.append(extract_user_short(edge["node"]))
@@ -601,7 +607,9 @@ class UserMixin:
             users = users[:amount]
         return users
 
-    def user_followers_v1_chunk(self, user_id: int, max_amount: int = 0, max_id: str = "") -> Tuple[List[UserShort], str]:
+    def user_followers_v1_chunk(
+        self, user_id: int, max_amount: int = 0, max_id: str = ""
+    ) -> Tuple[List[UserShort], str]:
         """
         Get user's followers information by Private Mobile API and max_id (cursor)
 
@@ -622,13 +630,16 @@ class UserMixin:
         unique_set = set()
         users = []
         while True:
-            result = self.private_request(f"friendships/{user_id}/followers/", params={
-                "max_id": max_id,
-                "rank_token": self.rank_token,
-                "search_surface": "follow_list_page",
-                "query": "",
-                "enable_groups": "true"
-            })
+            result = self.private_request(
+                f"friendships/{user_id}/followers/",
+                params={
+                    "max_id": max_id,
+                    "rank_token": self.rank_token,
+                    "search_surface": "follow_list_page",
+                    "query": "",
+                    "enable_groups": "true",
+                },
+            )
             for user in result["users"]:
                 user = extract_user_short(user)
                 if user.pk in unique_set:
@@ -785,8 +796,8 @@ class UserMixin:
             {
                 # "media_id": media_pk,  # when feed_timeline
                 "target_posts_author_id": str(user_id),
-                "container_module": "media_mute_sheet"  # or "feed_timeline"
-            }
+                "container_module": "media_mute_sheet",  # or "feed_timeline"
+            },
         )
         return result["status"] == "ok"
 
@@ -829,8 +840,8 @@ class UserMixin:
             {
                 # "media_id": media_pk,  # when feed_timeline
                 "target_reel_author_id": str(user_id),
-                "container_module": "media_mute_sheet"  # or "feed_timeline"
-            }
+                "container_module": "media_mute_sheet",  # or "feed_timeline"
+            },
         )
         return result["status"] == "ok"
 

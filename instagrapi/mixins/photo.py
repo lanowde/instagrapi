@@ -211,15 +211,18 @@ class UploadPhotoMixin:
             self.logger.debug(f"Attempt #{attempt} to configure Photo: {path}")
             time.sleep(3)
             if self.photo_configure(
-                upload_id, width, height, caption, usertags, location,
-                extra_data=extra_data
+                upload_id,
+                width,
+                height,
+                caption,
+                usertags,
+                location,
+                extra_data=extra_data,
             ):
                 media = self.last_json.get("media")
                 self.expose()
                 return extract_media_v1(media)
-        raise PhotoConfigureError(
-            response=self.last_response, **self.last_json
-        )
+        raise PhotoConfigureError(response=self.last_response, **self.last_json)
 
     def photo_configure(
         self,
@@ -284,7 +287,7 @@ class UploadPhotoMixin:
                 "crop_zoom": 1.0,
             },
             "extra": {"source_width": width, "source_height": height},
-            **extra_data
+            **extra_data,
         }
         return self.private_request("media/configure/", self.with_default_data(data))
 
@@ -348,7 +351,7 @@ class UploadPhotoMixin:
                 hashtags,
                 stickers,
                 medias,
-                extra_data=extra_data
+                extra_data=extra_data,
             ):
                 media = self.last_json.get("media")
                 self.expose()
@@ -359,11 +362,9 @@ class UploadPhotoMixin:
                     locations=locations,
                     stickers=stickers,
                     medias=medias,
-                    **extract_media_v1(media).dict()
+                    **extract_media_v1(media).dict(),
                 )
-        raise PhotoConfigureStoryError(
-            response=self.last_response, **self.last_json
-        )
+        raise PhotoConfigureStoryError(response=self.last_response, **self.last_json)
 
     def photo_configure_to_story(
         self,
@@ -479,7 +480,7 @@ class UploadPhotoMixin:
                     "tag_name": mention.hashtag.name,
                     "is_sticker": True,
                     "tap_state": 0,
-                    "tap_state_str_id": "hashtag_sticker_gradient"
+                    "tap_state_str_id": "hashtag_sticker_gradient",
                 }
                 tap_models.append(item)
         if locations:
@@ -497,45 +498,47 @@ class UploadPhotoMixin:
                     "location_id": str(mention.location.pk),
                     "is_sticker": True,
                     "tap_state": 0,
-                    "tap_state_str_id": "location_sticker_vibrant"
+                    "tap_state_str_id": "location_sticker_vibrant",
                 }
                 tap_models.append(item)
         if stickers:
             for sticker in stickers:
                 str_id = sticker.id  # "gif_Igjf05J559JWuef4N5"
-                static_models.append({
-                    "x": sticker.x,
-                    "y": sticker.y,
-                    "z": sticker.z,
-                    "width": sticker.width,
-                    "height": sticker.height,
-                    "rotation": sticker.rotation,
-                    "str_id": str_id,
-                    "sticker_type": sticker.type,
-                })
+                static_models.append(
+                    {
+                        "x": sticker.x,
+                        "y": sticker.y,
+                        "z": sticker.z,
+                        "width": sticker.width,
+                        "height": sticker.height,
+                        "rotation": sticker.rotation,
+                        "str_id": str_id,
+                        "sticker_type": sticker.type,
+                    }
+                )
                 story_sticker_ids.append(str_id)
                 if sticker.type == "gif":
                     data["has_animated_sticker"] = "1"
         if medias:
             for feed_media in medias:
-                assert feed_media.media_pk, 'Required StoryMedia.media_pk'
+                assert feed_media.media_pk, "Required StoryMedia.media_pk"
                 # if not feed_media.user_id:
                 #     user = self.media_user(feed_media.media_pk)
                 #     feed_media.user_id = user.pk
                 item = {
-                    'x': feed_media.x,
-                    'y': feed_media.y,
-                    'z': feed_media.z,
-                    'width': feed_media.width,
-                    'height': feed_media.height,
-                    'rotation': feed_media.rotation,
-                    'type': 'feed_media',
-                    'media_id': str(feed_media.media_pk),
-                    'media_owner_id': str(feed_media.user_id or ""),
-                    'product_type': 'feed',
-                    'is_sticker': True,
-                    'tap_state': 0,
-                    'tap_state_str_id': 'feed_post_sticker_square'
+                    "x": feed_media.x,
+                    "y": feed_media.y,
+                    "z": feed_media.z,
+                    "width": feed_media.width,
+                    "height": feed_media.height,
+                    "rotation": feed_media.rotation,
+                    "type": "feed_media",
+                    "media_id": str(feed_media.media_pk),
+                    "media_owner_id": str(feed_media.user_id or ""),
+                    "product_type": "feed",
+                    "is_sticker": True,
+                    "tap_state": 0,
+                    "tap_state_str_id": "feed_post_sticker_square",
                 }
                 tap_models.append(item)
             data["reshared_media_id"] = str(feed_media.media_pk)

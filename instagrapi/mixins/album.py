@@ -249,7 +249,7 @@ class UploadAlbumMixin:
                 }
                 for child in childs
             ],
-            **extra_data
+            **extra_data,
         }
         return self.private_request(
             "media/configure_sidecar/", self.with_default_data(data)

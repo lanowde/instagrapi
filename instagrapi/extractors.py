@@ -233,9 +233,7 @@ def extract_direct_thread(data):
     data["messages"] = []
     for item in data["items"]:
         item["thread_id"] = data["id"]
-        data["messages"].append(
-            extract_direct_message(item)
-        )
+        data["messages"].append(extract_direct_message(item))
     data["users"] = [extract_user_short(u) for u in data["users"]]
     if "inviter" in data:
         data["inviter"] = extract_user_short(data["inviter"])
@@ -327,7 +325,7 @@ def extract_story_v1(data):
     story["hashtags"] = []
     story["stickers"] = []
     feed_medias = []
-    story_feed_medias = data.get('story_feed_media') or []
+    story_feed_medias = data.get("story_feed_media") or []
     for feed_media in story_feed_medias:
         feed_media["media_pk"] = int(feed_media["media_id"])
         feed_medias.append(StoryMedia(**feed_media))
@@ -346,7 +344,8 @@ def extract_story_gql(data):
     if "video_resources" in story:
         # Select Best Quality by Resolutiuon
         story["video_url"] = sorted(
-            story["video_resources"], key=lambda o: o["config_height"] * o["config_width"]
+            story["video_resources"],
+            key=lambda o: o["config_height"] * o["config_width"],
         )[-1]["src"]
     story["product_type"] = "story"
     story["thumbnail_url"] = story.get("display_url")
@@ -369,7 +368,7 @@ def extract_story_gql(data):
     story["links"] = []
     story_cta_url = story.get("story_cta_url", [])
     if story_cta_url:
-        story["links"] = [StoryLink(**{'webUri': story_cta_url})]
+        story["links"] = [StoryLink(**{"webUri": story_cta_url})]
     story["user"] = extract_user_short(story.get("owner"))
     story["pk"] = int(story["id"])
     story["id"] = f"{story['id']}_{story['owner']['id']}"
@@ -381,11 +380,8 @@ def extract_story_gql(data):
 
 def extract_highlight_v1(data):
     highlight = deepcopy(data)
-    highlight['pk'] = highlight['id'].split(':')[1]
-    highlight['items'] = [
-        extract_story_v1(item)
-        for item in highlight['items']
-    ]
+    highlight["pk"] = highlight["id"].split(":")[1]
+    highlight["items"] = [extract_story_v1(item) for item in highlight["items"]]
     return Highlight(**highlight)
 
 
