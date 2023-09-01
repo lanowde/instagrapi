@@ -37,8 +37,6 @@ The first request to fetch media/user is `public` (anonymous), if instagram rais
   * [`DirectThread`](direct.md) - Thread (topic) with messages in Direct Message
   * [`DirectMessage`](direct.md) - Message in Direct Message
   * [`Insight`](insight.md) - Insights for a post
-  * [`Track`](track.md) - Music track (for Reels/Clips)
-* [Best Practices](best-practices.md)
 * [Development Guide](../development-guide.md)
 * [Handle Exceptions](handle_exception.md)
 * [Exceptions](../exceptions.md)

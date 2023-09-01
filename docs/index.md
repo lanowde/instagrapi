@@ -6,9 +6,9 @@
 
 Fast and effective Instagram Private API wrapper (public+private requests and challenge resolver). Use the most recent version of the API from Instagram, which was obtained using [reverse-engineering with Charles Proxy](https://adw0rd.com/2020/03/26/sniffing-instagram-charles-proxy/en/) and [Proxyman](https://proxyman.io/).
 
-*Instagram API valid for **13 February 2023** (last reverse-engineering check)*
+*Instagram API valid for **17 October 2021** (last reverse-engineering check)*
 
-Support **Python >= 3.8**
+Support **Python >= 3.6**, recommend 3.8+
 
 For any other languages (e.g. C++, C#, F#, D, [Golang](https://github.com/adw0rd/instagrapi-rest/tree/main/golang), Erlang, Elixir, Nim, Haskell, Lisp, Closure, Julia, R, Java, Kotlin, Scala, OCaml, JavaScript, Crystal, Ruby, Rust, [Swift](https://github.com/adw0rd/instagrapi-rest/tree/main/swift), Objective-C, Visual Basic, .NET, Pascal, Perl, Lua, PHP and others), I suggest using [instagrapi-rest](https://github.com/adw0rd/instagrapi-rest)
 
@@ -103,7 +103,6 @@ To learn more about the various ways `instagrapi` can be used, read the [Usage G
   * [`Collection`](usage-guide/collection.md) - Collection of medias (name, picture and list of medias)
   * [`Comment`](usage-guide/comment.md) - Comments to Media
   * [`Highlight`](usage-guide/highlight.md) - Highlights
-  * ['Notes'](usage-guide/notes.md) - Notes
   * [`Story`](usage-guide/story.md) - Story
   * [`StoryLink`](usage-guide/story.md) - Link (Swipe up)
   * [`StoryLocation`](usage-guide/story.md) - Tag Location in Story (as sticker)
@@ -114,8 +113,6 @@ To learn more about the various ways `instagrapi` can be used, read the [Usage G
   * [`DirectThread`](usage-guide/direct.md) - Thread (topic) with messages in Direct Message
   * [`DirectMessage`](usage-guide/direct.md) - Message in Direct Message
   * [`Insight`](usage-guide/insight.md) - Insights for a post
-  * [`Track`](usage-guide/track.md) - Music track (for Reels/Clips)
-* [Best Practices](usage-guide/best-practices.md)
 * [Development Guide](development-guide.md)
 * [Handle Exceptions](usage-guide/handle_exception.md)
 * [Challenge Resolver](usage-guide/challenge_resolver.md)

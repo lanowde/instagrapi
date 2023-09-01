@@ -1,6 +1,4 @@
-import html
 import json
-import re
 from copy import deepcopy
 
 from .types import (
@@ -8,7 +6,6 @@ from .types import (
     Collection,
     Comment,
     DirectMedia,
-    Guide,
     DirectMessage,
     DirectResponse,
     DirectShortThread,
@@ -17,9 +14,7 @@ from .types import (
     Highlight,
     Location,
     Media,
-    MediaXma,
     MediaOembed,
-    ReplyMessage,
     Resource,
     Story,
     StoryLink,
@@ -67,34 +62,11 @@ def extract_media_v1(data):
     )
     media["like_count"] = media.get("like_count", 0)
     media["has_liked"] = media.get("has_liked", False)
-    media["sponsor_tags"] = [tag["sponsor"] for tag in media.get("sponsor_tags", [])]
-    media["play_count"] = media.get("play_count", 0)
-    media["coauthor_producers"] = media.get("coauthor_producers", [])
     return Media(
         caption_text=(media.get("caption") or {}).get("text", ""),
         resources=[
             extract_resource_v1(edge) for edge in media.get("carousel_media", [])
         ],
-        **media,
-    )
-
-
-def extract_media_v1_xma(data):
-    """Extract media from Private API"""
-    media = deepcopy(data)
-
-    # media["media_type"] = 10
-    media["video_url"] = media.get("target_url", "")
-    media["title"] = media.get("title_text", "")
-    media["preview_url"] = media.get("preview_url", "")
-    media["preview_url_mime_type"] = media.get("preview_url_mime_type", "")
-    media["header_icon_url"] = media.get("header_icon_url", "")
-    media["header_icon_width"] = media.get("header_icon_width", 0)
-    media["header_icon_height"] = media.get("header_icon_height", 0)
-    media["header_title_text"] = media.get("header_title_text", "")
-    media["preview_media_fbid"] = media.get("preview_media_fbid", "")
-
-    return MediaXma(
         **media,
     )
 
@@ -113,15 +85,14 @@ def extract_media_gql(data):
         media["media_type"] = 0
     if media.get("media_type") == 2 and not media.get("product_type"):
         media["product_type"] = "feed"
-    sorted_resources = sorted(
-        # display_resources - user feed, thumbnail_resources - hashtag feed
-        media.get("display_resources", media.get("thumbnail_resources", [])),
-        key=lambda o: o["config_width"] * o["config_height"],
-    )
-    if sorted_resources:
-        media["thumbnail_url"] = sorted_resources[-1]["src"]
-    elif "thumbnail_src" in media:
+    if "thumbnail_src" in media:
         media["thumbnail_url"] = media["thumbnail_src"]
+    else:
+        media["thumbnail_url"] = sorted(
+            # display_resources - user feed, thumbnail_resources - hashtag feed
+            media.get("display_resources", media.get("thumbnail_resources")),
+            key=lambda o: o["config_width"] * o["config_height"],
+        )[-1]["src"]
     if media.get("media_type") == 8:
         # remove thumbnail_url and video_url for albums
         # see resources
@@ -154,10 +125,6 @@ def extract_media_gql(data):
         resources=[
             extract_resource_gql(edge["node"])
             for edge in media.get("edge_sidecar_to_children", {}).get("edges", [])
-        ],
-        sponsor_tags=[
-            extract_user_short(edge["node"]["sponsor"])
-            for edge in media.get("edge_media_to_sponsor_user", {}).get("edges", [])
         ],
         **media,
     )
@@ -210,9 +177,6 @@ def extract_user_gql(data):
 def extract_user_v1(data):
     """For Private API"""
     data["external_url"] = data.get("external_url") or None
-    versions = data.get("hd_profile_pic_versions")
-    pic_hd = versions[-1] if versions else data.get("hd_profile_pic_url_info", {})
-    data["profile_pic_url_hd"] = pic_hd.get("url")
     return User(**data)
 
 
@@ -231,10 +195,9 @@ def extract_location(data):
     address_json = data.get("address_json", "{}")
     if isinstance(address_json, str):
         address = json.loads(address_json)
-        if isinstance(address, dict) and address:
-            data["address"] = address.get("street_address")
-            data["city"] = address.get("city_name")
-            data["zip"] = address.get("zip_code")
+        data["address"] = address.get("street_address")
+        data["city"] = address.get("city_name")
+        data["zip"] = address.get("zip_code")
     return Location(**data)
 
 
@@ -270,7 +233,9 @@ def extract_direct_thread(data):
     data["messages"] = []
     for item in data["items"]:
         item["thread_id"] = data["id"]
-        data["messages"].append(extract_direct_message(item))
+        data["messages"].append(
+            extract_direct_message(item)
+        )
     data["users"] = [extract_user_short(u) for u in data["users"]]
     if "inviter" in data:
         data["inviter"] = extract_user_short(data["inviter"])
@@ -288,28 +253,8 @@ def extract_direct_response(data):
     return DirectResponse(**data)
 
 
-def extract_reply_message(data):
-    data["id"] = data.get("item_id")
-    if "media_share" in data:
-        ms = data["media_share"]
-        if not ms.get("code"):
-            ms["code"] = InstagramIdCodec.encode(ms["id"])
-        data["media_share"] = extract_media_v1(ms)
-    if "media" in data:
-        data["media"] = extract_direct_media(data["media"])
-    clip = data.get("clip", {})
-    if clip:
-        if "clip" in clip:
-            # Instagram ¯\_(ツ)_/¯
-            clip = clip.get("clip")
-        data["clip"] = extract_media_v1(clip)
-    return ReplyMessage(**data)
-
-
 def extract_direct_message(data):
     data["id"] = data.get("item_id")
-    if "replied_to_message" in data:
-        data["reply"] = extract_reply_message(data["replied_to_message"])
     if "media_share" in data:
         ms = data["media_share"]
         if not ms.get("code"):
@@ -317,19 +262,12 @@ def extract_direct_message(data):
         data["media_share"] = extract_media_v1(ms)
     if "media" in data:
         data["media"] = extract_direct_media(data["media"])
-    if "voice_media" in data:
-        if "media" in data["voice_media"]:
-            data["media"] = extract_direct_media(data["voice_media"]["media"])
     clip = data.get("clip", {})
     if clip:
         if "clip" in clip:
             # Instagram ¯\_(ツ)_/¯
             clip = clip.get("clip")
         data["clip"] = extract_media_v1(clip)
-    xma_media_share = data.get("xma_media_share", {})
-    if xma_media_share:
-        data["xma_share"] = extract_media_v1_xma(xma_media_share[0])
-
     return DirectMessage(**data)
 
 
@@ -347,8 +285,6 @@ def extract_direct_media(data):
         )[-1]["url"]
     if "user" in media:
         media["user"] = extract_user_short(media.get("user"))
-    if "audio" in media:
-        media["audio_url"] = media["audio"].get("audio_src")
     return DirectMedia(**media)
 
 
@@ -359,13 +295,13 @@ def extract_account(data):
 
 def extract_hashtag_gql(data):
     data["media_count"] = data.get("edge_hashtag_to_media", {}).get("count")
-    data["profile_pic_url"] = data.get("profile_pic_url") or None
+    data["profile_pic_url"] = data["profile_pic_url"] or None
     return Hashtag(**data)
 
 
 def extract_hashtag_v1(data):
     data["allow_following"] = data.get("allow_following") == 1
-    data["profile_pic_url"] = data.get("profile_pic_url") or None
+    data["profile_pic_url"] = data["profile_pic_url"] or None
     return Hashtag(**data)
 
 
@@ -389,9 +325,9 @@ def extract_story_v1(data):
     ]
     story["locations"] = []
     story["hashtags"] = []
-    story["stickers"] = data.get("story_link_stickers") or []
+    story["stickers"] = []
     feed_medias = []
-    story_feed_medias = data.get("story_feed_media") or []
+    story_feed_medias = data.get('story_feed_media') or []
     for feed_media in story_feed_medias:
         feed_media["media_pk"] = int(feed_media["media_id"])
         feed_medias.append(StoryMedia(**feed_media))
@@ -401,7 +337,6 @@ def extract_story_v1(data):
         for link in cta.get("links", []):
             story["links"].append(StoryLink(**link))
     story["user"] = extract_user_short(story.get("user"))
-    story["sponsor_tags"] = [tag["sponsor"] for tag in story.get("sponsor_tags", [])]
     return Story(**story)
 
 
@@ -411,8 +346,7 @@ def extract_story_gql(data):
     if "video_resources" in story:
         # Select Best Quality by Resolutiuon
         story["video_url"] = sorted(
-            story["video_resources"],
-            key=lambda o: o["config_height"] * o["config_width"],
+            story["video_resources"], key=lambda o: o["config_height"] * o["config_width"]
         )[-1]["src"]
     story["product_type"] = "story"
     story["thumbnail_url"] = story.get("display_url")
@@ -435,38 +369,25 @@ def extract_story_gql(data):
     story["links"] = []
     story_cta_url = story.get("story_cta_url", [])
     if story_cta_url:
-        story["links"] = [StoryLink(**{"webUri": story_cta_url})]
+        story["links"] = [StoryLink(**{'webUri': story_cta_url})]
     story["user"] = extract_user_short(story.get("owner"))
     story["pk"] = int(story["id"])
     story["id"] = f"{story['id']}_{story['owner']['id']}"
     story["code"] = InstagramIdCodec.encode(story["pk"])
     story["taken_at"] = story["taken_at_timestamp"]
     story["media_type"] = 2 if story["is_video"] else 1
-    story["sponsor_tags"] = [
-        extract_user_short(edge["node"]["sponsor"])
-        for edge in story.get("edge_media_to_sponsor_user", {}).get("edges", [])
-    ]
     return Story(**story)
 
 
 def extract_highlight_v1(data):
     highlight = deepcopy(data)
-    highlight["pk"] = highlight["id"].split(":")[1]
-    highlight["items"] = [extract_story_v1(item) for item in highlight.get("items", [])]
+    highlight['pk'] = highlight['id'].split(':')[1]
+    highlight['items'] = [
+        extract_story_v1(item)
+        for item in highlight['items']
+    ]
     return Highlight(**highlight)
 
 
-def extract_guide_v1(data):
-    item = deepcopy(data.get("summary") or {})
-    item["cover_media"] = extract_media_v1(item["cover_media"])
-    return Guide(**item)
-
-
 def extract_track(data):
-    data["cover_artwork_uri"] = data.get("cover_artwork_uri") or None
-    data["cover_artwork_thumbnail_uri"] = (
-        data.get("cover_artwork_thumbnail_uri") or None
-    )
-    items = re.findall(r"<BaseURL>(.+?)</BaseURL>", data["dash_manifest"])
-    data["uri"] = html.unescape(items[0]) if items else None
     return Track(**data)
