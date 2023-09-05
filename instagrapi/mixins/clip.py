@@ -10,12 +10,7 @@ from instagrapi import config
 from instagrapi.exceptions import ClientError, ClipConfigureError, ClipNotUpload
 from instagrapi.extractors import extract_media_v1
 from instagrapi.types import Location, Media, Track, Usertag
-from instagrapi.utils import date_time_original
-
-try:
-    from PIL import Image
-except ImportError:
-    raise Exception("You don't have PIL installed. Please install PIL or Pillow>=8.1.1")
+from instagrapi.utils import date_time_original, get_thumbnail, get_metadata_from_file
 
 
 class DownloadClipMixin:
@@ -384,43 +379,8 @@ def analyze_video(path: Path, thumbnail: Path = None) -> tuple:
     Tuple
         A tuple with (thumbail path, width, height, duration)
     """
-    try:
-        import moviepy.editor as mp
-    except ImportError:
-        raise Exception("Please install moviepy>=1.0.3 and retry")
 
-    print(f'Analyzing CLIP file "{path}"')
-    video = mp.VideoFileClip(str(path))
-    width, height = video.size
-    if not thumbnail:
-        thumbnail = f"{path}.jpg"
-        print(f'Generating thumbnail "{thumbnail}"...')
-        video.save_frame(thumbnail, t=(video.duration / 2))
-        crop_thumbnail(thumbnail)
-    return thumbnail, width, height, video.duration
+    width, height, duration = get_metadata_from_file(path)
+    thumbnail = get_thumbnail(path, duration)
 
-
-def crop_thumbnail(path: Path) -> bool:
-    """
-    Analyze and crop thumbnail if need
-
-    Parameters
-    ----------
-    path: Path
-        Path to the video
-
-    Returns
-    -------
-    bool
-        A boolean value
-    """
-    im = Image.open(str(path))
-    width, height = im.size
-    offset = (height / 1.78) / 2
-    center = width / 2
-    # Crop the center of the image
-    im = im.crop((center - offset, 0, center + offset, height))
-    with open(path, "w") as fp:
-        im.save(fp)
-        im.close()
-    return True
+    return thumbnail, width, height, duration

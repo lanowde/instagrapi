@@ -94,7 +94,7 @@ class Client(
         self,
         settings: dict = {},
         proxy: str = None,
-        delay_range: list = None,
+        delay_range: list = [2, 7],
         logger=DEFAULT_LOGGER,
         **kwargs,
     ):

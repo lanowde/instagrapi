@@ -28,7 +28,7 @@ from instagrapi.types import (
     StorySticker,
     Usertag,
 )
-from instagrapi.utils import date_time_original, dumps
+from instagrapi.utils import date_time_original, dumps, get_thumbnail, get_metadata_from_file
 
 
 class DownloadVideoMixin:
@@ -890,21 +890,7 @@ def analyze_video(path: Path, thumbnail: Path = None) -> tuple:
         (width, height, duration, thumbnail)
     """
 
-    try:
-        import moviepy.editor as mp
-    except ImportError:
-        raise Exception("Please install moviepy>=1.0.3 and retry")
+    width, height, duration = get_metadata_from_file(path)
+    thumbnail = get_thumbnail(path, duration)
 
-    print(f'Analyzing video file "{path}"')
-    video = mp.VideoFileClip(str(path))
-    width, height = video.size
-    if not thumbnail:
-        thumbnail = f"{path}.jpg"
-        print(f'Generating thumbnail "{thumbnail}"...')
-        video.save_frame(thumbnail, t=(video.duration / 2))
-    # duration = round(video.duration + 0.001, 3)
-    try:
-        video.close()
-    except AttributeError:
-        pass
-    return width, height, video.duration, thumbnail
+    return width, height, duration, thumbnail

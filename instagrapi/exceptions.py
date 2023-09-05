@@ -83,6 +83,10 @@ class ClientIncompleteReadError(ClientError):
     """Raised due to incomplete read HTTP response"""
 
 
+class ManualInputRequired(PrivateError):
+    pass
+
+
 class ClientLoginRequired(ClientError):
     """Instagram redirect to https://www.instagram.com/accounts/login/"""
 
