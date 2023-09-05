@@ -98,7 +98,6 @@ class Client(
         logger=DEFAULT_LOGGER,
         **kwargs,
     ):
-
         super().__init__(**kwargs)
 
         self.settings = settings

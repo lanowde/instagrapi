@@ -72,7 +72,6 @@ def get_html_path(path, use_directory_urls):
 
     # Directory URLs require some different logic. This mirrors mkdocs' internal logic.
     if use_directory_urls:
-
         # Both `index.md` and `README.md` files are normalized to `index.html` during build
         name = "index" if name_orig.lower() in ("index", "readme") else name_orig
 
@@ -125,13 +124,11 @@ class RedirectPlugin(BasePlugin):
 
     # Create HTML files for redirects after site dir has been built
     def on_post_build(self, config, **kwargs):
-
         # Determine if 'use_directory_urls' is set
         use_directory_urls = config.get("use_directory_urls")
 
         # Walk through the redirect map and write their HTML files
         for page_old, page_new in self.redirects.items():
-
             # External redirect targets are easy, just use it as the target path
             if page_new.lower().startswith(("http://", "https://")):
                 dest_path = page_new

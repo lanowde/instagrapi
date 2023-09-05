@@ -386,7 +386,6 @@ class UserMixin:
         return self.search_users_v1(query, count)
 
     def search_followers_v1(self, user_id: str, query: str) -> List[UserShort]:
-
         """
         Search users by followers (Private Mobile API)
 

@@ -204,7 +204,6 @@ class UploadClipMixin:
         track: Track,
         extra_data: Dict[str, str] = {},
     ) -> Media:
-
         """
         Upload CLIP as reel with music metadata.
         It also add the music under the video, therefore a mute video is required.
