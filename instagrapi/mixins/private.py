@@ -67,6 +67,7 @@ def manual_input_code(self, username: str, choice=None):
     return code  # is not int, because it can start from 0
     """
 
+
 def manual_change_password(self, username: str):
     raise ManualInputRequired("Manual Password Insertion Required..")
 

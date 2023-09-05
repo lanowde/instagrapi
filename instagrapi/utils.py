@@ -113,30 +113,34 @@ def random_delay(delay_range: list):
 
 
 def run_cmd(args: list):
-    return subprocess.check_output(args).decode('utf-8')
+    return subprocess.check_output(args).decode("utf-8")
 
 
 def _get_sec(duration: str) -> str:
-    ts = duration.split('.')[0]
-    return sum(int(x) * 60 ** i for i, x in enumerate(reversed(ts.split(':'))))
+    ts = duration.split(".")[0]
+    return sum(int(x) * 60**i for i, x in enumerate(reversed(ts.split(":"))))
 
 
 def get_metadata_from_file(file: Path):
     cmd = "ffprobe -v quiet -print_format json -show_streams"
     args = shlex.split(cmd)
-    args.append(str(file)) 
+    args.append(str(file))
     data = json.loads(run_cmd(args))
-    height = data['streams'][0]['height']
-    width = data['streams'][0]['width']
-    duration = data['streams'][-1].get('duration') or _get_sec(data['streams'][-1]['tags']['DURATION'])
+    height = data["streams"][0]["height"]
+    width = data["streams"][0]["width"]
+    duration = data["streams"][-1].get("duration") or _get_sec(
+        data["streams"][-1]["tags"]["DURATION"]
+    )
     return height, width, int(float(duration))
 
 
 def get_thumbnail(file, duration, thumb_path):
     if not thumb_path:
         thumb_path = f"{Path(file).name}.jpg".replace(" ", "")
-    cmd = f"ffmpeg -ss {duration / 2} -an -s 404x720 -vframes 1 '''{thumb_path}''' -y -i"
-        args = shlex.split(cmd)
-        args.append(str(file))
-        run_cmd(args)
+    cmd = (
+        f"ffmpeg -ss {duration / 2} -an -s 404x720 -vframes 1 '''{thumb_path}''' -y -i"
+    )
+    args = shlex.split(cmd)
+    args.append(str(file))
+    run_cmd(args)
     return thumb_path if Path(thumb_path).is_file() else None

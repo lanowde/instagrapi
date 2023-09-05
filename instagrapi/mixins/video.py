@@ -28,7 +28,12 @@ from instagrapi.types import (
     StorySticker,
     Usertag,
 )
-from instagrapi.utils import date_time_original, dumps, get_thumbnail, get_metadata_from_file
+from instagrapi.utils import (
+    date_time_original,
+    dumps,
+    get_thumbnail,
+    get_metadata_from_file,
+)
 
 
 class DownloadVideoMixin:
