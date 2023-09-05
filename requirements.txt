@@ -1,5 +1,4 @@
 requests
 PySocks
 pydantic
-moviepy
 pycryptodomex
