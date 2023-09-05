@@ -101,6 +101,7 @@ class Client(
         super().__init__(**kwargs)
 
         self.settings = settings
+        self.code = {}
         self.logger = logger
         self.delay_range = delay_range
 

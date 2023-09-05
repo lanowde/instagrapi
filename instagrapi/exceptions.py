@@ -19,6 +19,10 @@ class ClientError(Exception):
             self.code = self.response.status_code
 
 
+class PrivateError(ClientError):
+    """For Private API and last_json logic"""
+
+
 class ClientUnknownError(ClientError):
     pass
 
@@ -93,10 +97,6 @@ class ClientLoginRequired(ClientError):
 
 class ReloginAttemptExceeded(ClientError):
     pass
-
-
-class PrivateError(ClientError):
-    """For Private API and last_json logic"""
 
 
 class NotFoundError(PrivateError):
